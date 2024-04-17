@@ -858,6 +858,19 @@ class FacetGrid(Grid):
 
     def _finalize_grid(self, axlabels):
         """Finalize the annotations and layout."""
+        # Adjust visibility of x tick labels for wrapped grids with empty rows
+        if self._col_wrap is not None:
+            # Identify the indices of the last subplot in each column
+            last_col_indices = [i for i in range(self._n_facets - 1, self._ncol * self._nrow, self._ncol)]
+            for ax in self.axes.flat:
+                if ax is not None and ax.get_subplotspec().colspan.start in last_col_indices:
+                    for label in ax.get_xticklabels():
+                        label.set_visible(True)
+        else:
+            for ax in self._bottom_axes:
+                for label in ax.get_xticklabels():
+                    label.set_visible(True)
+
         self.set_axis_labels(*axlabels)
         self.tight_layout()
 
